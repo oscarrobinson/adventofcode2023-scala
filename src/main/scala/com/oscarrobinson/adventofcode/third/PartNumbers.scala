@@ -24,6 +24,7 @@ case class Schematic(grid: Grid[Char]) {
     .map(getNeighbouringSchematicNumbers)
     .filter(_.size == 2)
     .map(partList => Gear(partList(0), partList(1)))
+
   private def getNeighbouringSchematicNumbers(gridValue: GridValue[Char]) = {
     val neighbouringGridValues = grid.getNeighbours(gridValue, includeDiagonals = true)
     val schematicNumbers = getSchematicNumbers()
