@@ -1,6 +1,14 @@
 package com.oscarrobinson.adventofcode.utils
 
-case class CoordSpace[T](width: Int, height: Int, contents: Array[Array[CoordSpaceValue[T]]])
+case class CoordSpace[T](contents: Array[Array[CoordSpaceValue[T]]]) {
+  val width: Int = contents.head.length
+  val height: Int = contents.length
+  
+  val allPoints: Array[CoordSpaceValue[T]] = contents.flatten
+  def getNeighbours(point: Point2D, includeDiagonals: Boolean) = point.getNeighbours(includeDiagonals, width, height)
+  
+  def getValue(point: Point2D): CoordSpaceValue[T] = contents(point.y)(point.x)
+}
 object CoordSpace {
   def fromFile(filename: String) = {
     val lines = Utils.fileLinesAs[Array[(String, Int)]](filename, _.toArray.zipWithIndex)
@@ -9,8 +17,8 @@ object CoordSpace {
         CoordSpaceValue(value, Point2D(xCoord, yCoord))
       }
     }
-    CoordSpace(contents.head.length, contents.length, contents)
+    CoordSpace(contents)
   }
 }
 
-case class CoordSpaceValue[T](value: T, coordinates: Point2D)
+case class CoordSpaceValue[T](contents: T, coordinates: Point2D)

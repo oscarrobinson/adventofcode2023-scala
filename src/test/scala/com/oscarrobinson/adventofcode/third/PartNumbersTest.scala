@@ -10,4 +10,10 @@ class PartNumbersTest extends AnyWordSpec with Matchers {
       sumPartNumbers("inputs/3/test_input.txt") shouldEqual 4361
     }
   }
+
+  "sumGearRatios" should {
+    "return correct sum" in {
+      sumGearRatios("inputs/3/test_input.txt") shouldEqual 467835
+    }
+  }
 }
