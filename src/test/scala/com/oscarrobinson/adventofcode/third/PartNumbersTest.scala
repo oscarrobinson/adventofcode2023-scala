@@ -7,13 +7,13 @@ class PartNumbersTest extends AnyWordSpec with Matchers {
 
   "sumPartNumbers" should {
     "return correct sum" in {
-      sumPartNumbers("inputs/3/test_input.txt") shouldEqual 4361
+      sumPartNumbers(Schematic.fromFileName("inputs/3/test_input.txt")) shouldEqual 4361
     }
   }
 
   "sumGearRatios" should {
     "return correct sum" in {
-      sumGearRatios("inputs/3/test_input.txt") shouldEqual 467835
+      sumGearRatios(Schematic.fromFileName("inputs/3/test_input.txt")) shouldEqual 467835
     }
   }
 }

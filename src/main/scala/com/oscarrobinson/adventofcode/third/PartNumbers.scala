@@ -7,64 +7,71 @@ case class SchematicNumber(points: List[CoordSpaceValue[Char]]) {
   def isEmpty = points.isEmpty
 
   def numericValue: Int = points.map(_.contents).mkString.toInt
+}
 
-  def neighbouringPoints(schematic: CoordSpace[Char]) = {
-    val neighbourCoords = points.flatMap(_.coordinates.getNeighbours(true, schematic.width, schematic.height)).distinct
-    val numberCoords = points.map(_.coordinates)
-    neighbourCoords.filterNot(coord => numberCoords.contains(coord))
+case class Gear(part1: SchematicNumber, part2: SchematicNumber) {
+  val ratio: Int = part1.numericValue * part2.numericValue
+}
+
+case class Schematic(coordSpace: CoordSpace[Char]) {
+
+  def getPartNumbers(): Seq[SchematicNumber] = {
+    getSchematicNumbers().filter(isPartNumber)
   }
 
-  def isPartNumber(schematic: CoordSpace[Char]): Boolean = {
-    val neighbours = neighbouringPoints(schematic)
-    neighbours.map(point => schematic.getValue(point)).exists(coordSpaceValue =>
-      !(coordSpaceValue.contents.isDigit || coordSpaceValue.contents == '.'))
-  }
-}
-
-
-def getSchematicNumbersFromRow(row: Array[CoordSpaceValue[Char]]): List[SchematicNumber] = {
-  row.foldLeft(Nil: List[SchematicNumber]) {
-    case (currentNumber :: restOfNumbers, point) if point.contents.isDigit =>
-      currentNumber.copy(points = currentNumber.points :+ point) :: restOfNumbers
-    case (Nil, point) if point.contents.isDigit =>
-      List(SchematicNumber(List(point)))
-    case (currentNumber :: numbers, point) if !currentNumber.isEmpty =>
-      SchematicNumber(Nil) :: currentNumber :: numbers
-    case (numbers, _) =>
-      numbers
-  }.filterNot(_.isEmpty).reverse
-}
-
-def getGearsFromRow(row: Array[CoordSpaceValue[Char]]): Array[CoordSpaceValue[Char]] = {
-  row.filter(_.contents == '*')
-}
-
-def getGearNeighbouringNumbers(gear: CoordSpaceValue[Char], numbers: Seq[SchematicNumber], schematic: CoordSpace[Char]): Seq[SchematicNumber] = {
-  numbers.filter(_.neighbouringPoints(schematic).contains(gear.coordinates))
-}
-
-def sumPartNumbers(schematicFileName: String): Int = {
-  val schematic = CoordSpace.fromFile(schematicFileName)
-  val numbersInSchematic = schematic.contents.flatMap(getSchematicNumbersFromRow)
-  val partNumbersInSchematic = numbersInSchematic.filter(_.isPartNumber(schematic))
-  partNumbersInSchematic.map(_.numericValue).sum
-}
-
-def sumGearRatios(schematicFileName: String): Int = {
-  val schematic = CoordSpace.fromFile(schematicFileName)
-  val numbersInSchematic = schematic.contents.flatMap(getSchematicNumbersFromRow)
-  val gearsInSchematic = schematic.contents.flatMap(getGearsFromRow)
-  val gearNumbers = gearsInSchematic
-    .map(gear => getGearNeighbouringNumbers(gear, numbersInSchematic, schematic).toList)
+  def getGears(): Seq[Gear] = coordSpace.allPoints
+    .filter(_.contents == '*')
+    .map(getNeighbouringSchematicNumbers)
     .filter(_.size == 2)
-  gearNumbers.flatMap {
-    case Seq(first, second) => Some(first.numericValue * second.numericValue)
-    case _ => None
-  }.sum
+    .map(partList => Gear(partList(0), partList(1)))
+  private def getNeighbouringSchematicNumbers(point: CoordSpaceValue[Char]) = {
+    val neighbouringPoints = coordSpace.getNeighbours(point, includeDiagonals = true)
+    val schematicNumbers = getSchematicNumbers()
+    schematicNumbers.filter(schematicNumber => {
+      schematicNumber.points.intersect(neighbouringPoints).nonEmpty
+    })
+  }
+
+  private def getSchematicNumbers(): Seq[SchematicNumber] = {
+    coordSpace.contents.flatMap(getSchematicNumbersFromRow)
+  }
+
+  private def getNeighboursOf(schematicNumber: SchematicNumber) =
+    schematicNumber.points.flatMap(point => coordSpace.getNeighbours(point, includeDiagonals = true)).distinct
+
+  private def isPartNumber(schematicNumber: SchematicNumber): Boolean =
+    getNeighboursOf(schematicNumber).exists(coordSpaceValue =>
+      !(coordSpaceValue.contents.isDigit || coordSpaceValue.contents == '.'))
+
+  private def getSchematicNumbersFromRow(row: Array[CoordSpaceValue[Char]]): List[SchematicNumber] = {
+    row.foldLeft(Nil: List[SchematicNumber]) {
+      case (currentNumber :: restOfNumbers, point) if point.contents.isDigit =>
+        currentNumber.copy(points = currentNumber.points :+ point) :: restOfNumbers
+      case (Nil, point) if point.contents.isDigit =>
+        List(SchematicNumber(List(point)))
+      case (currentNumber :: numbers, point) if !currentNumber.isEmpty =>
+        SchematicNumber(Nil) :: currentNumber :: numbers
+      case (numbers, _) =>
+        numbers
+    }.filterNot(_.isEmpty).reverse
+  }
 }
 
+object Schematic {
+  def fromFileName(fileName: String): Schematic = {
+    Schematic(CoordSpace.fromFile(fileName))
+  }
+}
+
+def sumPartNumbers(schematic: Schematic): Int =
+  schematic.getPartNumbers().map(_.numericValue).sum
+
+def sumGearRatios(schematic: Schematic): Int =
+  schematic.getGears().map(_.ratio).sum
 
 @main
 def main(): Unit = {
-  print(sumGearRatios("inputs/3/input.txt"))
+  val schematic = Schematic.fromFileName("inputs/3/input.txt")
+  println(s"Part 1: ${sumPartNumbers(schematic)}")
+  println(s"Part 2: ${sumGearRatios(schematic)}")
 }

@@ -3,12 +3,16 @@ package com.oscarrobinson.adventofcode.utils
 case class CoordSpace[T](contents: Array[Array[CoordSpaceValue[T]]]) {
   val width: Int = contents.head.length
   val height: Int = contents.length
-  
+
   val allPoints: Array[CoordSpaceValue[T]] = contents.flatten
-  def getNeighbours(point: Point2D, includeDiagonals: Boolean) = point.getNeighbours(includeDiagonals, width, height)
-  
+
   def getValue(point: Point2D): CoordSpaceValue[T] = contents(point.y)(point.x)
+
+  def getNeighbours(point: CoordSpaceValue[T], includeDiagonals: Boolean): Seq[CoordSpaceValue[T]] = {
+    point.coordinates.getNeighbours(includeDiagonals, width, height).map(getValue)
+  }
 }
+
 object CoordSpace {
   def fromFile(filename: String) = {
     val lines = Utils.fileLinesAs[Array[(String, Int)]](filename, _.toArray.zipWithIndex)
