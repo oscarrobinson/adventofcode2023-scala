@@ -25,10 +25,10 @@ case class Schematic(grid: Grid[Char]) {
     .filter(_.size == 2)
     .map(partList => Gear(partList(0), partList(1)))
   private def getNeighbouringSchematicNumbers(gridValue: GridValue[Char]) = {
-    val neighbouringPoints = grid.getNeighbours(gridValue, includeDiagonals = true)
+    val neighbouringGridValues = grid.getNeighbours(gridValue, includeDiagonals = true)
     val schematicNumbers = getSchematicNumbers()
     schematicNumbers.filter(schematicNumber => {
-      schematicNumber.gridValues.intersect(neighbouringPoints).nonEmpty
+      schematicNumber.gridValues.intersect(neighbouringGridValues).nonEmpty
     })
   }
 
@@ -37,7 +37,7 @@ case class Schematic(grid: Grid[Char]) {
   }
 
   private def getNeighboursOf(schematicNumber: SchematicNumber) =
-    schematicNumber.gridValues.flatMap(point => grid.getNeighbours(point, includeDiagonals = true)).distinct
+    schematicNumber.gridValues.flatMap(gridValue => grid.getNeighbours(gridValue, includeDiagonals = true)).distinct
 
   private def isPartNumber(schematicNumber: SchematicNumber): Boolean =
     getNeighboursOf(schematicNumber).exists(gridValue =>
@@ -45,11 +45,11 @@ case class Schematic(grid: Grid[Char]) {
 
   private def getSchematicNumbersFromRow(row: Array[GridValue[Char]]): List[SchematicNumber] = {
     row.foldLeft(Nil: List[SchematicNumber]) {
-      case (currentNumber :: restOfNumbers, point) if point.contents.isDigit =>
-        currentNumber.copy(gridValues = currentNumber.gridValues :+ point) :: restOfNumbers
-      case (Nil, point) if point.contents.isDigit =>
-        List(SchematicNumber(List(point)))
-      case (currentNumber :: numbers, point) if !currentNumber.isEmpty =>
+      case (currentNumber :: restOfNumbers, gridValue) if gridValue.contents.isDigit =>
+        currentNumber.copy(gridValues = currentNumber.gridValues :+ gridValue) :: restOfNumbers
+      case (Nil, gridValue) if gridValue.contents.isDigit =>
+        List(SchematicNumber(List(gridValue)))
+      case (currentNumber :: numbers, _) if !currentNumber.isEmpty =>
         SchematicNumber(Nil) :: currentNumber :: numbers
       case (numbers, _) =>
         numbers
