@@ -14,11 +14,11 @@ case class CoordSpace[T](contents: Array[Array[CoordSpaceValue[T]]]) {
 }
 
 object CoordSpace {
-  def fromFile(filename: String) = {
+  def fromFile[T](filename: String, valueTransformer: Char => T = char => char): CoordSpace[T] = {
     val lines = Utils.fileLinesAs[Array[(String, Int)]](filename, _.toArray.zipWithIndex)
     val contents = lines.map { case (lineValue, yCoord) =>
-      lineValue.toArray.zipWithIndex.map { case (value, xCoord) =>
-        CoordSpaceValue(value, Point2D(xCoord, yCoord))
+      lineValue.toArray.zipWithIndex.map { case (char, xCoord) =>
+        CoordSpaceValue(valueTransformer(char), Point2D(xCoord, yCoord))
       }
     }
     CoordSpace(contents)
