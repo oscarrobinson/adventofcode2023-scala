@@ -1,52 +1,52 @@
 package com.oscarrobinson.adventofcode.third
 
-import com.oscarrobinson.adventofcode.utils.{CoordSpace, CoordSpaceValue}
+import com.oscarrobinson.adventofcode.utils.{Grid, GridValue}
 
 
-case class SchematicNumber(points: List[CoordSpaceValue[Char]]) {
-  def isEmpty = points.isEmpty
+case class SchematicNumber(gridValues: List[GridValue[Char]]) {
+  def isEmpty = gridValues.isEmpty
 
-  def numericValue: Int = points.map(_.contents).mkString.toInt
+  def numericValue: Int = gridValues.map(_.contents).mkString.toInt
 }
 
 case class Gear(part1: SchematicNumber, part2: SchematicNumber) {
   val ratio: Int = part1.numericValue * part2.numericValue
 }
 
-case class Schematic(coordSpace: CoordSpace[Char]) {
+case class Schematic(grid: Grid[Char]) {
 
   def getPartNumbers(): Seq[SchematicNumber] = {
     getSchematicNumbers().filter(isPartNumber)
   }
 
-  def getGears(): Seq[Gear] = coordSpace.allPoints
+  def getGears(): Seq[Gear] = grid.allGridValues
     .filter(_.contents == '*')
     .map(getNeighbouringSchematicNumbers)
     .filter(_.size == 2)
     .map(partList => Gear(partList(0), partList(1)))
-  private def getNeighbouringSchematicNumbers(point: CoordSpaceValue[Char]) = {
-    val neighbouringPoints = coordSpace.getNeighbours(point, includeDiagonals = true)
+  private def getNeighbouringSchematicNumbers(gridValue: GridValue[Char]) = {
+    val neighbouringPoints = grid.getNeighbours(gridValue, includeDiagonals = true)
     val schematicNumbers = getSchematicNumbers()
     schematicNumbers.filter(schematicNumber => {
-      schematicNumber.points.intersect(neighbouringPoints).nonEmpty
+      schematicNumber.gridValues.intersect(neighbouringPoints).nonEmpty
     })
   }
 
   private def getSchematicNumbers(): Seq[SchematicNumber] = {
-    coordSpace.contents.flatMap(getSchematicNumbersFromRow)
+    grid.contents.flatMap(getSchematicNumbersFromRow)
   }
 
   private def getNeighboursOf(schematicNumber: SchematicNumber) =
-    schematicNumber.points.flatMap(point => coordSpace.getNeighbours(point, includeDiagonals = true)).distinct
+    schematicNumber.gridValues.flatMap(point => grid.getNeighbours(point, includeDiagonals = true)).distinct
 
   private def isPartNumber(schematicNumber: SchematicNumber): Boolean =
-    getNeighboursOf(schematicNumber).exists(coordSpaceValue =>
-      !(coordSpaceValue.contents.isDigit || coordSpaceValue.contents == '.'))
+    getNeighboursOf(schematicNumber).exists(gridValue =>
+      !(gridValue.contents.isDigit || gridValue.contents == '.'))
 
-  private def getSchematicNumbersFromRow(row: Array[CoordSpaceValue[Char]]): List[SchematicNumber] = {
+  private def getSchematicNumbersFromRow(row: Array[GridValue[Char]]): List[SchematicNumber] = {
     row.foldLeft(Nil: List[SchematicNumber]) {
       case (currentNumber :: restOfNumbers, point) if point.contents.isDigit =>
-        currentNumber.copy(points = currentNumber.points :+ point) :: restOfNumbers
+        currentNumber.copy(gridValues = currentNumber.gridValues :+ point) :: restOfNumbers
       case (Nil, point) if point.contents.isDigit =>
         List(SchematicNumber(List(point)))
       case (currentNumber :: numbers, point) if !currentNumber.isEmpty =>
@@ -59,7 +59,7 @@ case class Schematic(coordSpace: CoordSpace[Char]) {
 
 object Schematic {
   def fromFileName(fileName: String): Schematic = {
-    Schematic(CoordSpace.fromFile(fileName))
+    Schematic(Grid.fromFile(fileName))
   }
 }
 
