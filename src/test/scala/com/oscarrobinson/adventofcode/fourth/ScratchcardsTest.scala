@@ -10,4 +10,9 @@ class ScratchcardsTest extends AnyWordSpec with Matchers {
     }
   }
 
+  "getFinalScratchcardCount" should {
+    "return correct count" in {
+      getFinalScratchcardCount("inputs/4/test_input.txt") shouldEqual 30
+    }
+  }
 }
