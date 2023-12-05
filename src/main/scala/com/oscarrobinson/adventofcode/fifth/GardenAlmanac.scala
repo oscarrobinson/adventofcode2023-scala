@@ -2,6 +2,10 @@ package com.oscarrobinson.adventofcode.fifth
 
 import com.oscarrobinson.adventofcode.utils.Utils
 
+import java.util.concurrent.Executors
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, ExecutionContext, Future}
+
 case class AlmanacRange(sourceStart: Long, destinationStart: Long, length: Long) {
   def convert(sourceValue: Long): Option[Long] =
     if (sourceValue >= sourceStart && sourceValue < (sourceStart + length))
@@ -56,20 +60,31 @@ def getLowestLocationNumberPart2(filename: String): Long = {
     }
   })
 
+  implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(10))
   // Brute force cos not enough time to do a nice optimal solution today
-  val minLocations = seedRanges.zipWithIndex.map { case (seedRange, index) =>
-    println(s"Range ${index + 1}")
-    seedRange.foldLeft(Long.MaxValue) { case (minLocation, seed) =>
-      val location = rangesList.foldLeft(seed)((value, ranges) => {
-        val newValue = ranges.flatMap(_.convert(value)).lift(0)
-        newValue.getOrElse(value)
-      })
-      if (location < minLocation) location else minLocation
+  val minLocationsFuture = Future.sequence(seedRanges.zipWithIndex.map { case (seedRange, index) =>
+    Future {
+      seedRange.foldLeft(Long.MaxValue) { case (minLocation, seed) =>
+
+        val seedNumber = seed-seedRange.start
+        if (seedNumber % 1000000 == 0) {
+          println(s"Range ${index + 1}: ${seedNumber}/${seedRange.size}")
+        }
+
+        val location = rangesList.foldLeft(seed)((value, ranges) => {
+          val newValue = ranges.flatMap(_.convert(value)).lift(0)
+          newValue.getOrElse(value)
+        })
+        if (location < minLocation) location else minLocation
+      }
     }
-  }
+  })
+
+  val minLocations = Await.result(minLocationsFuture, Duration.Inf)
 
   minLocations.min
 }
+
 @main
 def main(): Unit = {
   println(s"Part 1: ${getLowestLocationNumber("inputs/5/input.txt")}")
