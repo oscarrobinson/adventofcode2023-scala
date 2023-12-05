@@ -1,4 +1,4 @@
-package com.oscarrobinson.adventofcode
+package com.oscarrobinson.adventofcode.fifth
 
 import com.oscarrobinson.adventofcode.fifth.{AlmanacRange, getLowestLocationNumber}
 import org.scalatest.matchers.should.Matchers
@@ -8,7 +8,7 @@ class GardenAlmanacTest extends AnyWordSpec with Matchers {
 
   "AlmanacRange.convert" should {
     "perform correct conversion" in {
-      AlmanacRange(50, 52, 48).convert(79) shouldEqual Some(81)
+      AlmanacRange(50L, 52L, 48L).convert(79) shouldEqual Some(81)
     }
   }
 
@@ -21,6 +21,12 @@ class GardenAlmanacTest extends AnyWordSpec with Matchers {
   "getLowestLocationNumber" should {
     "return correct location" in {
       getLowestLocationNumber("inputs/5/test_input.txt") shouldEqual 35
+    }
+  }
+
+  "getLowestLocationNumberPart2" should {
+    "return correct location" in {
+      getLowestLocationNumberPart2("inputs/5/test_input.txt") shouldEqual 46
     }
   }
 

@@ -55,4 +55,3 @@ def main(): Unit = {
   println(s"Part 1: ${getScratchcardsTotalPoints("inputs/4/input.txt")}")
   println(s"Part 2: ${getFinalScratchcardCount("inputs/4/input.txt")}")
 }
-
