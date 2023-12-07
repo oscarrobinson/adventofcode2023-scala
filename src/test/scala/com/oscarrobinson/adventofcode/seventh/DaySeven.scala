@@ -52,11 +52,11 @@ class DaySeven extends AnyWordSpec with Matchers {
 
   "Hand.totalRank" should {
     "return correct rank for a five of a kind hand" in {
-      Hand("A2345", 100).totalRank() shouldEqual 145432
+      Hand("A2345", 100).totalRank() shouldEqual 1405040302L
     }
 
     "return correct rank for a one pair hand" in {
-      Hand("22345", 100).totalRank() shouldEqual 114543
+      Hand("22345", 100).totalRank() shouldEqual 100002050403L
     }
   }
 

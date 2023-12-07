@@ -36,11 +36,15 @@ case class Hand(cards: String, bid: Long) {
   }
   def cardsRank(): Int = groupedHand.map(_.head).flatMap(cardsScore.get).map(num => "%02d".format(num)).mkString.toInt
   
-  def totalRank(): Int = typeRank() * 1
+  def totalRank(): Long = typeRank() * 100000000000L + cardsRank()
 }
 
 def daySevenPartOne(filename: String): Long = {
-  0L
+  val lines = Utils.fileLinesAs(filename, _.toList)
+  val hands =  lines.map(_.split(' ')).map(list => Hand(list(0), list(1).toLong))
+  hands.sortBy(_.totalRank()).zipWithIndex.foldLeft(0L) { case (totalWinnings, (hand, rank)) =>
+    totalWinnings + (hand.bid * (rank + 1))
+  }
 }
 
 def daySevenPartTwo(filename: String): Long = {
