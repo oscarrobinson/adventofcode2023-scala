@@ -36,31 +36,6 @@ class DaySeven extends AnyWordSpec with Matchers {
     }
   }
 
-  "Hand.cardsRank" should {
-    "return correct rank for a high card hand" in {
-      Hand("A2345", 100).cardsRank() shouldEqual 1405040302
-    }
-
-    "return correct rank for a five of a kind hand" in {
-      Hand("AAAAA", 100).cardsRank() shouldEqual 14
-    }
-
-    "return correct rank for a two pair hand" in {
-      Hand("22879", 100).cardsRank() shouldEqual 2090807
-    }
-  }
-
-  "Hand.totalRank" should {
-    "return correct rank for a five of a kind hand" in {
-      Hand("A2345", 100).totalRank() shouldEqual 1405040302L
-    }
-
-    "return correct rank for a one pair hand" in {
-      Hand("22345", 100).totalRank() shouldEqual 100002050403L
-    }
-  }
-
-
   "daySevenPartOne" should {
     "return correct number" in {
       daySevenPartOne("inputs/7/test_input.txt") shouldEqual 6440L

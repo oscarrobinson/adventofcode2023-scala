@@ -34,7 +34,7 @@ case class Hand(cards: String, bid: Long) {
       // high card
       case _ => 0
   }
-  def cardsRank(): Int = groupedHand.map(_.head).flatMap(cardsScore.get).map(num => "%02d".format(num)).mkString.toInt
+  def cardsRank(): Int = cards.map(cardsScore).map(num => "%02d".format(num)).mkString.toInt
   
   def totalRank(): Long = typeRank() * 100000000000L + cardsRank()
 }
