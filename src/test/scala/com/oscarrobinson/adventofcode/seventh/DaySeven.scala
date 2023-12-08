@@ -34,6 +34,10 @@ class DaySeven extends AnyWordSpec with Matchers {
     "return correct rank for five of a kind" in {
       Hand("AAAAA", 100).typeRank() shouldEqual 6
     }
+
+    "return correct rank for hand with jokers" in {
+      JokerHand("JJQJQ", 100).typeRank() shouldEqual 6
+    }
   }
 
   "daySevenPartOne" should {
@@ -44,7 +48,7 @@ class DaySeven extends AnyWordSpec with Matchers {
 
   "daySevenPartTwo" should {
     "return correct number" in {
-      daySevenPartTwo("inputs/7/test_input.txt") shouldEqual 1L
+      daySevenPartTwo("inputs/7/test_input.txt") shouldEqual 5905L
     }
   }
 }
