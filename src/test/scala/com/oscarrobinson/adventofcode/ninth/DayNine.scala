@@ -6,13 +6,13 @@ import org.scalatest.wordspec.AnyWordSpec
 class DayNine extends AnyWordSpec with Matchers {
   "dayNinePartOne" should {
     "return correct number" in {
-      dayNinePartOne("inputs/9/test_input.txt") shouldEqual 1L
+      dayNinePartOne("inputs/9/test_input.txt") shouldEqual 114L
     }
   }
 
-  "daySevenPartTwo" should {
+  "dayNinePartTwo" should {
     "return correct number" in {
-      dayNinePartTwo("inputs/9/test_input.txt") shouldEqual 1L
+      dayNinePartTwo("inputs/9/test_input.txt") shouldEqual 2L
     }
   }
 }
