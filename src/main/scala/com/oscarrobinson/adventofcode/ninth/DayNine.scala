@@ -2,9 +2,8 @@ package com.oscarrobinson.adventofcode.ninth
 
 import com.oscarrobinson.adventofcode.utils.Utils
 
-
 def getDifferences(sequence: List[Long]): List[List[Long]] = {
-  val differences = sequence.sliding(2).map { case elem1 :: elem2 :: _ => elem2 - elem1}.toList
+  val differences = sequence.sliding(2).map { case elem1 :: elem2 :: _ => elem2 - elem1 }.toList
   if (differences.forall(_ == 0L)) List(differences)
   else differences :: getDifferences(differences)
 }
@@ -19,21 +18,19 @@ def getNext(sequence: List[Long]): Long = {
 def getPrior(sequence: List[Long]): Long = {
   val differences = sequence :: getDifferences(sequence)
   differences.reverse.foldLeft(0L)((prevSeqPriorValue, nextDifference) => {
-     nextDifference.head - prevSeqPriorValue
+    nextDifference.head - prevSeqPriorValue
   })
 }
 
-def dayNinePartOne(filename: String): Long = {
-  val sequences = Utils.fileLinesAs(filename, _.toList)
+def parseSequences(filename: String): List[List[Long]] =
+  Utils.fileLinesAs(filename, _.toList)
     .map(_.split(' ').filter(_.nonEmpty).map(_.strip().toLong).toList)
-  sequences.map(getNext).sum
-}
 
-def dayNinePartTwo(filename: String): Long = {
-  val sequences = Utils.fileLinesAs(filename, _.toList)
-    .map(_.split(' ').filter(_.nonEmpty).map(_.strip().toLong).toList)
-  sequences.map(getPrior).sum
-}
+def dayNinePartOne(filename: String): Long =
+  parseSequences(filename).map(getNext).sum
+
+def dayNinePartTwo(filename: String): Long =
+  parseSequences(filename).map(getPrior).sum
 
 @main
 def main(): Unit = {
