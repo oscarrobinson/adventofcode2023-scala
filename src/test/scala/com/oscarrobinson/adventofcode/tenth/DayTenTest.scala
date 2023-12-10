@@ -12,7 +12,11 @@ class DayTenTest extends AnyWordSpec with Matchers {
 
   "dayTenPartTwo" should {
     "return correct number" in {
-      dayTenPartTwo("inputs/10/test_input.txt") shouldEqual 1L
+      dayTenPartTwo("inputs/10/test_input_2.txt") shouldEqual 10L
+    }
+
+    "return correct number when some enclosed area shouldnt be counted" in {
+      dayTenPartTwo("inputs/10/test_input_3.txt") shouldEqual 4L
     }
   }
 }

@@ -24,4 +24,13 @@ object Grid {
     }
     Grid(contents)
   }
+
+  def fromArray[T](lists: Array[Array[T]]): Grid[T] = {
+    val contents = lists.zipWithIndex.map { case (lineValue, yCoord) =>
+      lineValue.zipWithIndex.map { case (char, xCoord) =>
+        GridValue(char, Point2D(xCoord, yCoord))
+      }
+    }
+    Grid(contents)
+  }
 }
