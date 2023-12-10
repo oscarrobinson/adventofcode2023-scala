@@ -13,7 +13,7 @@ touch src/test/scala/com/oscarrobinson/adventofcode/$2/Day$1Test.scala
 
 mkdir inputs/$3
 touch inputs/$3/input.txt
-touch inputs/$3/input_test.txt
+touch inputs/$3/test_input.txt
 
 cat >src/main/scala/com/oscarrobinson/adventofcode/$2/Day$1.scala <<EOL
 package com.oscarrobinson.adventofcode.${day}
