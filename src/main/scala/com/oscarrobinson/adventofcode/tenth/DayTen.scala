@@ -49,15 +49,18 @@ class PipeGrid(val grid: Grid[Char]) {
 
   lazy val nodesOutsidePath = {
     val outsidePathSet = mutable.Set.empty[GridValue[Char]]
-    
+
     val outsideQueue = mutable.Queue(grid.allGridValues.head)
 
     while (outsideQueue.nonEmpty) {
+      println(outsidePathSet.size)
       val node = outsideQueue.dequeue()
       outsidePathSet.add(node)
-      grid.getNeighbours(node, includeDiagonals = false).filter(pathNodes.contains).foreach(outsideQueue.enqueue)
+      grid.getNeighbours(node, includeDiagonals = false)
+        .filterNot(neighbour => pathNodes.contains(neighbour) || outsideQueue.contains(neighbour) || outsidePathSet.contains(neighbour))
+        .foreach(outsideQueue.enqueue)
     }
-    
+
     outsidePathSet.toSet
   }
 
@@ -71,10 +74,13 @@ class PipeGrid(val grid: Grid[Char]) {
   def display() = {
     val ANSI_RESET = "\u001B[0m"
     val ANSI_RED = "\u001B[31m"
+    val ANSI_BLUE = "\u001b[34m"
     for (row <- grid.contents) {
       for (cell <- row) {
         if (pathNodes.contains(cell)) {
           print(s"${ANSI_RED}${cell.contents}${ANSI_RESET}")
+        } else if (nodesOutsidePath.contains(cell)) {
+          print(s"${ANSI_BLUE}${cell.contents}${ANSI_RESET}")
         } else {
           print(cell.contents)
         }
@@ -140,7 +146,7 @@ def dayTenPartTwo(filename: String): Long = {
   val grid = PipeGrid(Grid.fromArray(paddingRow +: gridXYPadded :+ paddingRow))
 
   grid.display()
-  
+
   grid.grid.allGridValues.filterNot(gridValue => {
     grid.nodesOutsidePath.contains(gridValue) ||
       grid.pathNodes.contains(gridValue) ||
